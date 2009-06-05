@@ -63,23 +63,26 @@ class ItemsController < ApplicationController
   def create
     @item = Item.new(params[:item])
     
-    if logged_in?
-      @item.user = current_user
-    else
-      @item.content = @item.content.gsub(/((<a\s+.*?href.+?\".*?\")([^\>]*?)>)/, '\2 rel="nofollow" \3>')
-      @item.byline = "Anonymous Coward" if @item.byline.empty?
-      if @item.byline.length > 18
-        @item.errors.add("Byline")
-        render :action => 'new'
-        return
+    if @item.valid?
+    
+      if logged_in?
+        @item.user = current_user
+      else
+        @item.content = @item.content.gsub(/((<a\s+.*?href.+?\".*?\")([^\>]*?)>)/, '\2 rel="nofollow" \3>')
+        @item.byline = "Anonymous" if @item.byline.empty?
+        if @item.byline.length > 18
+          @item.errors.add("Byline")
+          render :action => 'new'
+          return
+        end
+      end
+    
+      if @item.title.empty?
+        @item.title = @item.content.gsub(/\<[^\>]+\>/, '')[0...40] + "..."
       end
     end
     
-    if @item.title.empty?
-      @item.title = @item.content.gsub(/\<[^\>]+\>/, '')[0...40] + "..."
-    end
-    
-    unless logged_in?
+    unless logged_in? || params[:captcha].blank? || params[:captcha_guide].blank?
       unless Digest::SHA1.hexdigest(params[:captcha].upcase.chomp)[0..5] == params[:captcha_guide]
         @item.errors.add("Word")
         render :action => 'new'

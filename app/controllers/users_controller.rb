@@ -12,6 +12,7 @@ class UsersController < ApplicationController
     @user = User.new(params[:user])
     unless Digest::SHA1.hexdigest(params[:captcha].upcase.chomp)[0..5] == params[:captcha_guide]
       @user.errors.add("Word")
+      logger.error { "Error With the Captcha" }
       render :action => 'new'
       return
     end    
@@ -22,6 +23,7 @@ class UsersController < ApplicationController
       redirect_back_or_default('/')
       flash[:notice] = "Thanks for signing up! You have been logged in automagically!"
     else
+      logger.error { "Errors with the User validation" }
       render :action => 'new'
     end
   end

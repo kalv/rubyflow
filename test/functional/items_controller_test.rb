@@ -9,7 +9,7 @@ class ItemsControllerTest < ActionController::TestCase
 
   def test_shouldnt_get_new
     get :new
-    assert_response :redirect
+    assert_response :success
   end
 
   def test_shouldnt_create_item
