@@ -38,4 +38,8 @@ class ItemsControllerTest < ActionController::TestCase
       delete :destroy, :id => items(:one).id
     end
   end
+  
+  def test_should_get_item_path
+    assert_equal "/items/#{items(:one).id}-mystring", item_path(items(:one))
+  end
 end

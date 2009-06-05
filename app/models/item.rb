@@ -15,7 +15,8 @@ class Item < ActiveRecord::Base
   validates_format_of       :tags, :with => /^[\s\w\-\_\:]+$/, :if => :tags?, :message => 'are invalid (alphanumerics, hyphens and underscores only)'
   
   def to_param
-    self[:name] && self[:name].length > 3 ? self[:name] : self[:id]
+    #self.name && self.name.length > 3 ? self.name : self.id
+    "#{self.id}-#{title.to_safe_uri}"
   end
   
   def tags=(tag_set)
